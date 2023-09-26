@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from .models import User
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -12,7 +11,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("username", "email", "fullname", "nickname")
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
@@ -41,6 +46,26 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
-    
-    def update(self, validated_data):
-        return get_user_model().objects.create_user(**validated_data)
+
+
+class FollowListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    nickname = serializers.CharField()
+    followers = serializers.SerializerMethodField()
+    followees = serializers.SerializerMethodField()
+
+    def get_followers(self, obj):
+        return [
+            {"pk": follower.pk, "nickname": follower.nickname}
+            for follower in obj.followers.all()
+        ]
+
+    def get_followees(self, obj):
+        return [
+            {"pk": followee.pk, "nickname": followee.nickname}
+            for followee in obj.followees.all()
+        ]
+
+    class Meta:
+        model = get_user_model()
+        fields = ("pk", "nickname", "followers", "followees")
