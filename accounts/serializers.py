@@ -1,6 +1,15 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["nickname"] = user.nickname
+        return token
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,4 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         return super().is_valid(raise_exception=raise_exception)
 
     def create(self, validated_data):
+        return get_user_model().objects.create_user(**validated_data)
+    
+    def update(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
