@@ -34,7 +34,7 @@ class ArticleListAPI(APIView):
 
     # 게시글 생성
     @swagger_auto_schema(request_body=ArticleCreateSerializer)
-    def post(self, request, format=None):
+    def post(self, request, pk=None, format=None):
         if not request.user.is_authenticated:
             return Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         serializer = ArticleCreateSerializer(data=request.data)
