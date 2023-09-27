@@ -167,14 +167,14 @@ class CommentAPI(APIView):
         comment = get_object_or_404(Comment, pk=comment_pk)
         user = request.user if request.user.is_authenticated else None
         # 게시글의 저자는 익명 댓글 삭제 가능
-        if article.author == user:
-            pass
+        if comment.author:
+            if comment.author != user:
+                return Response(
+                    {"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN
+                )
         else:
-            if comment.author:
-                if comment.author != user:
-                    return Response(
-                        {"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN
-                    )
+            if article.author == user:
+                pass
             else:
                 password = request.data.pop("password", None)
                 if password:

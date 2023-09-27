@@ -22,5 +22,5 @@ urlpatterns = [
     # 유저 게시글 조회
     path("<int:pk>/articles/", ArticleListAPI.as_view(), name="articles"),
     # 댓글 조회
-    path("<int:pk>/comments", CommentAPI.as_view(), name="comments"),
+    path("<int:pk>/comments/", CommentAPI.as_view(), name="comments"),
 ]

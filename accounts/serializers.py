@@ -1,14 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token["nickname"] = user.nickname
-        return token
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -27,6 +18,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "fullname",
             "nickname",
         )
+        extra_kwargs = {"password": {"write_only": True}}
 
     normalized_fields = ["username", "email", "nickname"]
 
